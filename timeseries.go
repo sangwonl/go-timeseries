@@ -32,6 +32,14 @@ type Primitive interface {
 	Reset()
 }
 
+type Integer int
+
+func NewInteger() Primitive                 { i := Integer(0); return &i }
+func (i *Integer) Value() int               { return int(*i) }
+func (i *Integer) Add(other Primitive)      { *i += *(other.(*Integer)) }
+func (i *Integer) CopyFrom(other Primitive) { *i = *(other.(*Integer)) }
+func (i *Integer) Reset()                   { *i = 0 }
+
 const (
 	ResolutionOneSecond  = 1 * time.Second
 	ResolutionTenSeconds = 10 * time.Second

@@ -5,14 +5,6 @@ import (
 	"time"
 )
 
-type Integer int
-
-func NewInteger() Primitive                 { i := Integer(0); return &i }
-func (i *Integer) Value() int               { return int(*i) }
-func (i *Integer) Add(other Primitive)      { *i += *(other.(*Integer)) }
-func (i *Integer) CopyFrom(other Primitive) { *i = *(other.(*Integer)) }
-func (i *Integer) Reset()                   { *i = 0 }
-
 func assertEqual(t *testing.T, a, b int) {
 	if a != b {
 		t.Errorf("a(=%v) should be b(=%v)", a, b)
