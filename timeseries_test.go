@@ -22,6 +22,11 @@ func asTime(s int64) time.Time {
 	return utcZeroTime.Add(time.Duration(s) * time.Second)
 }
 
+func asTimeMin(s int64) time.Time {
+	utcZeroTime := time.Time{}
+	return utcZeroTime.Add(time.Duration(s) * time.Minute)
+}
+
 func TestTimeSeriesPrimitive(t *testing.T) {
 	i := Integer(1)
 	assertEqual(t, i.Value(), 1)
@@ -107,4 +112,41 @@ func TestTimeSereis(t *testing.T) {
 
 	bucketVal = rangeVals[0].(*Integer).Value()
 	assertEqual(t, bucketVal, 10)
+}
+
+func TestTimeSereisWithWideResolution(t *testing.T) {
+	primitiveFunc := NewInteger
+	resolutions := []time.Duration{ResolutionTenMinutes}
+
+	timeSeries := NewTimeSeries(primitiveFunc, resolutions)
+	assertNotNil(t, timeSeries)
+	assertEqual(t, len(timeSeries.dataStreams), 1)
+	assertEqual(t, timeSeries.dataStreams[0].NumBuckets(), 0)
+
+	i := Integer(1)
+	timeSeries.Add(&i, asTimeMin(10))
+	timeSeries.Add(&i, asTimeMin(10))
+	timeSeries.Add(&i, asTimeMin(10))
+	timeSeries.Add(&i, asTimeMin(21))
+	timeSeries.Add(&i, asTimeMin(21))
+	timeSeries.Add(&i, asTimeMin(21))
+	timeSeries.Add(&i, asTimeMin(41))
+	timeSeries.Add(&i, asTimeMin(41))
+	timeSeries.Add(&i, asTimeMin(41))
+	timeSeries.Add(&i, asTimeMin(41))
+	assertEqual(t, timeSeries.dataStreams[0].NumBuckets(), 4)
+
+	total := timeSeries.Total().(*Integer)
+	assertEqual(t, total.Value(), 10)
+
+	resolutionIdx := 0
+	var rangeVals []Primitive
+	var bucketVal int
+
+	rangeVals = timeSeries.Range(resolutionIdx, asTimeMin(20), asTimeMin(29))
+	assertEqual(t, len(rangeVals), 1)
+
+	bucketVal = rangeVals[0].(*Integer).Value()
+	assertEqual(t, bucketVal, 3)
+
 }
