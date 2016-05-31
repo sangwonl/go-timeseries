@@ -101,4 +101,10 @@ func TestTimeSereis(t *testing.T) {
 
 	bucketVal = rangeVals[0].(*Integer).Value()
 	assertEqual(t, bucketVal, 10)
+
+	rangeVals = timeSeries.Range(resolutionIdx, asTime(0), asTime(10000))
+	assertEqual(t, len(rangeVals), 1)
+
+	bucketVal = rangeVals[0].(*Integer).Value()
+	assertEqual(t, bucketVal, 10)
 }

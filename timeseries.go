@@ -147,15 +147,21 @@ func (ts *TimeSeries) Range(resolutionIdx int, fromTime, toTime time.Time) []Pri
 
 	beginBucketIdx := int(fromTime.Sub(ds.beginTime) / ds.resolution)
 	endBucketIdx := int(toTime.Sub(ds.beginTime) / ds.resolution)
-	filtered := make([]Primitive, (endBucketIdx-beginBucketIdx)+1)
+	filteredBuckets := list.New()
 
-	iterIdx, insertIdx := 0, 0
+	iterIdx := 0
 	for e := ds.buckets.Front(); e != nil; e = e.Next() {
 		if beginBucketIdx <= iterIdx && iterIdx <= endBucketIdx {
-			filtered[insertIdx] = e.Value.(Primitive)
-			insertIdx++
+			filteredBuckets.PushBack(e.Value)
 		}
 		iterIdx++
+	}
+
+	filtered := make([]Primitive, filteredBuckets.Len())
+	insertIdx := 0
+	for e := filteredBuckets.Front(); e != nil; e = e.Next() {
+		filtered[insertIdx] = e.Value.(Primitive)
+		insertIdx++
 	}
 
 	return filtered
