@@ -28,10 +28,12 @@ func asTimeMin(s int64) time.Time {
 }
 
 func TestTimeSeriesPrimitive(t *testing.T) {
-	i := Integer(1)
+	i := Integer{}
+	i.SetValue(1)
 	assertEqual(t, i.Value(), 1)
 
-	i2 := Integer(2)
+	i2 := Integer{}
+	i2.SetValue(2)
 	i.Add(&i2)
 	assertEqual(t, i.Value(), 3)
 
@@ -54,7 +56,8 @@ func TestTimeSereis(t *testing.T) {
 	assertEqual(t, len(timeSeries.dataStreams), 2)
 	assertEqual(t, timeSeries.dataStreams[0].NumBuckets(), 0)
 
-	i := Integer(1)
+	i := Integer{}
+	i.SetValue(1)
 	timeSeries.Add(&i, asTime(1))
 	timeSeries.Add(&i, asTime(1))
 	timeSeries.Add(&i, asTime(1))
@@ -112,6 +115,9 @@ func TestTimeSereis(t *testing.T) {
 
 	bucketVal = rangeVals[0].(*Integer).Value()
 	assertEqual(t, bucketVal, 10)
+
+	bucketTs := rangeVals[0].(*Integer).Ts()
+	assertEqual(t, bucketTs.Second(), 1)
 }
 
 func TestTimeSereisWithWideResolution(t *testing.T) {
@@ -123,7 +129,8 @@ func TestTimeSereisWithWideResolution(t *testing.T) {
 	assertEqual(t, len(timeSeries.dataStreams), 1)
 	assertEqual(t, timeSeries.dataStreams[0].NumBuckets(), 0)
 
-	i := Integer(1)
+	i := Integer{}
+	i.SetValue(1)
 	timeSeries.Add(&i, asTimeMin(10))
 	timeSeries.Add(&i, asTimeMin(10))
 	timeSeries.Add(&i, asTimeMin(10))
@@ -149,4 +156,6 @@ func TestTimeSereisWithWideResolution(t *testing.T) {
 	bucketVal = rangeVals[0].(*Integer).Value()
 	assertEqual(t, bucketVal, 3)
 
+	bucketTs := rangeVals[0].(*Integer).Ts()
+	assertEqual(t, bucketTs.Minute(), 20)
 }

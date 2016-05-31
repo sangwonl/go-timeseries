@@ -30,15 +30,23 @@ type Primitive interface {
 	Add(other Primitive)
 	CopyFrom(other Primitive)
 	Reset()
+	Ts() time.Time
+	SetTs(t time.Time)
 }
 
-type Integer int
+type Integer struct {
+	val int
+	ts  time.Time
+}
 
-func NewInteger() Primitive                 { i := Integer(0); return &i }
-func (i *Integer) Value() int               { return int(*i) }
-func (i *Integer) Add(other Primitive)      { *i += *(other.(*Integer)) }
-func (i *Integer) CopyFrom(other Primitive) { *i = *(other.(*Integer)) }
-func (i *Integer) Reset()                   { *i = 0 }
+func NewInteger() Primitive                 { i := Integer{0, time.Time{}}; return &i }
+func (i *Integer) Value() int               { return i.val }
+func (i *Integer) SetValue(v int)           { i.val = v }
+func (i *Integer) Add(other Primitive)      { i.val += other.(*Integer).val }
+func (i *Integer) CopyFrom(other Primitive) { i.val = other.(*Integer).val }
+func (i *Integer) Reset()                   { i.val = 0 }
+func (i *Integer) Ts() time.Time            { return i.ts }
+func (i *Integer) SetTs(t time.Time)        { i.ts = t }
 
 const (
 	ResolutionOneSecond  = 1 * time.Second
@@ -119,13 +127,17 @@ func (ts *TimeSeries) Add(d Primitive, t time.Time) {
 			ds.endTime = t
 
 			first := ds.primitiveFunc()
+			first.SetTs(ds.beginTime)
 			ds.buckets.PushBack(first)
 		}
 
 		bucketIdxAtEnd := int(ds.endTime.Sub(ds.beginTime) / ds.resolution)
 		bucketIdxFromBegin := int(t.Sub(ds.beginTime) / ds.resolution)
 		for i := 0; i < bucketIdxFromBegin-bucketIdxAtEnd; i++ {
+			bucketTimeDelta := time.Duration(bucketIdxAtEnd+i+1) * ds.resolution
+			bucketTime := ds.beginTime.Add(bucketTimeDelta)
 			p := ds.primitiveFunc()
+			p.SetTs(bucketTime)
 			ds.buckets.PushBack(p)
 		}
 
