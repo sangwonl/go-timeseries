@@ -116,7 +116,7 @@ func TestTimeSereis(t *testing.T) {
 	bucketVal = rangeVals[0].(*Integer).Value()
 	assertEqual(t, bucketVal, 10)
 
-	bucketTs := rangeVals[0].(*Integer).Ts()
+	bucketTs := rangeVals[0].Ts()
 	assertEqual(t, bucketTs.Second(), 1)
 }
 
@@ -156,7 +156,7 @@ func TestTimeSereisWithWideResolution(t *testing.T) {
 	bucketVal = rangeVals[0].(*Integer).Value()
 	assertEqual(t, bucketVal, 3)
 
-	bucketTs := rangeVals[0].(*Integer).Ts()
+	bucketTs := rangeVals[0].Ts()
 	assertEqual(t, bucketTs.Minute(), 20)
 
 	rangeVals = timeSeries.All(resolutionIdx)
@@ -165,6 +165,6 @@ func TestTimeSereisWithWideResolution(t *testing.T) {
 	bucketVal = rangeVals[0].(*Integer).Value()
 	assertEqual(t, bucketVal, 3)
 
-	bucketTs = rangeVals[0].(*Integer).Ts()
+	bucketTs = rangeVals[0].Ts()
 	assertEqual(t, bucketTs.Minute(), 10)
 }
