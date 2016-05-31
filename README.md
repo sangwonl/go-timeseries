@@ -13,7 +13,7 @@ import "github.com/sangwonl/go-timeseries"
 
 ## Create a TimeSeries Struct
 ```
-ts := timeseries.NewTimeSeries(<PrimitiveClass>, <ResolutionList>)
+ts := timeseries.NewTimeSeries(<PrimitiveFactory>, <ResolutionList>)
 ```
 
 ## Add Data with Time
@@ -36,16 +36,8 @@ import (
     "github.com/sangwonl/go-timeseries"
 )
 
-type Integer int
-
-func NewInteger() timeseries.Primitive                 { i := Integer(0); return &i }
-func (i *Integer) Value() int                          { return int(*i) }
-func (i *Integer) Add(other timeseries.Primitive)      { *i += *(other.(*Integer)) }
-func (i *Integer) CopyFrom(other timeseries.Primitive) { *i = *(other.(*Integer)) }
-func (i *Integer) Reset()                              { *i = 0 }
-
 func TestTimeSeries() {
-    primitiveCreator := NewInteger
+    primitiveCreator := timeseries.NewInteger
     resolutions := []time.Duration{
         timeseries.ResolutionOneSecond,
         timeseries.ResolutionTenSeconds,
