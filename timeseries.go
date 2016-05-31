@@ -122,8 +122,9 @@ func (ts *TimeSeries) Add(d Primitive, t time.Time) {
 			ds.buckets.PushBack(first)
 		}
 
-		bucketIdxFromEnd := int(t.Sub(ds.endTime) / ds.resolution)
-		for i := 0; i < bucketIdxFromEnd; i++ {
+		bucketIdxAtEnd := int(ds.endTime.Sub(ds.beginTime) / ds.resolution)
+		bucketIdxFromBegin := int(t.Sub(ds.beginTime) / ds.resolution)
+		for i := 0; i < bucketIdxFromBegin-bucketIdxAtEnd; i++ {
 			p := ds.primitiveFunc()
 			ds.buckets.PushBack(p)
 		}
