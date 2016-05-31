@@ -155,13 +155,21 @@ func (ts *TimeSeries) Total() Primitive {
 	return ts.total
 }
 
+func (ts *TimeSeries) All(resolutionIdx int) []Primitive {
+	ds := ts.dataStreams[resolutionIdx]
+	return primitivesAsArray(ds.buckets)
+}
+
 func (ts *TimeSeries) Range(resolutionIdx int, fromTime, toTime time.Time) []Primitive {
 	ds := ts.dataStreams[resolutionIdx]
+	filtered := filterBucket(ds, fromTime, toTime)
+	return primitivesAsArray(filtered)
+}
 
+func filterBucket(ds *dataStream, fromTime, toTime time.Time) *list.List {
 	beginBucketIdx := int(fromTime.Sub(ds.beginTime) / ds.resolution)
 	endBucketIdx := int(toTime.Sub(ds.beginTime) / ds.resolution)
 	filteredBuckets := list.New()
-
 	iterIdx := 0
 	for e := ds.buckets.Front(); e != nil; e = e.Next() {
 		if beginBucketIdx <= iterIdx && iterIdx <= endBucketIdx {
@@ -169,13 +177,15 @@ func (ts *TimeSeries) Range(resolutionIdx int, fromTime, toTime time.Time) []Pri
 		}
 		iterIdx++
 	}
+	return filteredBuckets
+}
 
-	filtered := make([]Primitive, filteredBuckets.Len())
+func primitivesAsArray(buckets *list.List) []Primitive {
+	primitives := make([]Primitive, buckets.Len())
 	insertIdx := 0
-	for e := filteredBuckets.Front(); e != nil; e = e.Next() {
-		filtered[insertIdx] = e.Value.(Primitive)
+	for e := buckets.Front(); e != nil; e = e.Next() {
+		primitives[insertIdx] = e.Value.(Primitive)
 		insertIdx++
 	}
-
-	return filtered
+	return primitives
 }

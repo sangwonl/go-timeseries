@@ -158,4 +158,13 @@ func TestTimeSereisWithWideResolution(t *testing.T) {
 
 	bucketTs := rangeVals[0].(*Integer).Ts()
 	assertEqual(t, bucketTs.Minute(), 20)
+
+	rangeVals = timeSeries.All(resolutionIdx)
+	assertEqual(t, len(rangeVals), 4)
+
+	bucketVal = rangeVals[0].(*Integer).Value()
+	assertEqual(t, bucketVal, 3)
+
+	bucketTs = rangeVals[0].(*Integer).Ts()
+	assertEqual(t, bucketTs.Minute(), 10)
 }
