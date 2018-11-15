@@ -2,35 +2,35 @@
 Golang Timeseries Data Bucket
 
 ## Get Package
-```
-go get github.com/sangwonl/go-timeseries
+```bash
+$ go get github.com/sangwonl/go-timeseries
 ```
 
 ## Import Package
-```
+```go
 import "github.com/sangwonl/go-timeseries"
 ```
 
 ## Create a TimeSeries Struct
-```
+```go
 ts := timeseries.NewTimeSeries(<PrimitiveFactory>, <ResolutionList>)
 ```
 
 ## Add Data with Time
-```
+```go
 i := Integer(1)
 ts.Add(&i, time.Now())
 ```
 
 ## Extract Data in Time Range
-```
+```go
 rangeVals = ts.Range(resolutionIdx, beginTime, endTime)
 firstBucketVal = rangeVals[0].(*Integer).Value()
 secondBucketVal = rangeVals[1].(*Integer).Value()
 ```
 
 ## Example
-```
+```go
 import (
     "time"
     "github.com/sangwonl/go-timeseries"
